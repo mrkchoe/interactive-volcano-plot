@@ -93,16 +93,3 @@ If the repo is in a **project site** (e.g. `username.github.io/repo-name`), ensu
 └── README.md     # This file
 ```
 
-## Screenshots / GIF
-
-To add a screenshot or GIF to the README:
-
-1. Run the app locally, use **Regenerate data** and the sliders to get a nice view.
-2. Capture a screenshot or record a short GIF (e.g. with a screen recorder or browser extension).
-3. Put the file in the repo (e.g. `docs/screenshot.png` or `volcano-demo.gif`) and reference it in the README with:
-
-   `![Volcano plot](docs/screenshot.png)`
-
-## License
-
-Use and adapt as you like for portfolio or learning.
