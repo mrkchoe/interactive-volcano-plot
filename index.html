@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Volcano Plot | D3.js Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <h1>Interactive Volcano Plot</h1>
+    <p class="explainer">
+      A volcano plot visualizes differential expression or effect size (<em>log₂ fold change</em>, x-axis) 
+      against statistical significance (<em>−log₁₀(p-value)</em>, y-axis). Points above the horizontal 
+      threshold and outside the vertical thresholds are statistically significant; points in the upper 
+      left are "down-regulated" and upper right are "up-regulated."
+    </p>
+  </header>
+
+  <main class="main">
+    <aside class="panel" role="complementary" aria-label="Plot controls">
+      <h2>Controls</h2>
+
+      <div class="control-group">
+        <label for="fc-threshold">
+          <span class="label-text">log₂ FC threshold</span>
+          <span id="fc-value" class="value">1.0</span>
+        </label>
+        <input type="range" id="fc-threshold" min="0" max="3" step="0.1" value="1"
+               aria-valuemin="0" aria-valuemax="3" aria-valuenow="1" aria-valuetext="1.0">
+      </div>
+
+      <div class="control-group">
+        <label for="fdr-threshold">
+          <span class="label-text">FDR threshold</span>
+          <span id="fdr-value" class="value">0.05</span>
+        </label>
+        <input type="range" id="fdr-threshold" min="0" max="0.2" step="0.005" value="0.05"
+               aria-valuemin="0" aria-valuemax="0.2" aria-valuetext="0.05">
+      </div>
+
+      <div class="control-group">
+        <label for="top-n">
+          <span class="label-text">Show top N labels</span>
+        </label>
+        <input type="number" id="top-n" min="0" max="50" value="10" aria-label="Number of top significant points to label">
+        <label class="checkbox-label">
+          <input type="checkbox" id="show-labels" checked aria-label="Show labels for top significant points">
+          Show labels
+        </label>
+      </div>
+
+      <div class="control-group">
+        <label for="search-id">Search / zoom to ID</label>
+        <input type="text" id="search-id" placeholder="e.g. Gene_042" aria-label="Search for point by ID and zoom">
+        <div class="button-row">
+          <button type="button" id="search-btn" aria-label="Search and zoom to point">Go</button>
+          <button type="button" id="reset-zoom-btn" aria-label="Reset zoom to full view">Reset zoom</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="y-log-scale" aria-label="Use log scale for Y axis (default is -log10 p)">
+          Y axis as log scale (alternative)
+        </label>
+      </div>
+
+      <div class="control-group">
+        <button type="button" id="regenerate" aria-label="Regenerate synthetic data with new random seed">Regenerate data</button>
+      </div>
+
+      <div class="selection-info" id="selection-info" aria-live="polite" hidden>
+        <span id="selection-count">0</span> selected
+        <button type="button" id="export-csv" aria-label="Export selected points as CSV">Export selected CSV</button>
+      </div>
+
+      <div class="legend" role="region" aria-label="Legend">
+        <h3>Legend</h3>
+        <ul>
+          <li><span class="swatch sig-up"></span> Significant up</li>
+          <li><span class="swatch sig-down"></span> Significant down</li>
+          <li><span class="swatch not-sig"></span> Not significant</li>
+        </ul>
+        <p class="legend-note">Vertical lines: ±FC threshold. Horizontal line: −log₁₀(p) at FDR threshold.</p>
+      </div>
+    </aside>
+
+    <div class="plot-wrapper">
+      <div id="plot-container"></div>
+      <div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true"></div>
+    </div>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
