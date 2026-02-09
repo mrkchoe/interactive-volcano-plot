@@ -39,15 +39,21 @@ Points in the upper left are significant and “down”-regulated; points in the
 - **FC threshold:** Only points with |log2FC| ≥ this value can be “significant” in the colored sense; the vertical lines mark the boundaries.
 - **FDR threshold:** Points with FDR ≤ this value are considered significant. The **horizontal line** is drawn at the p-value that corresponds to this FDR level (i.e., the −log10 of that p-value). So points **above** the horizontal line have p-value below that cutoff; together with the FDR condition they drive the green/red coloring.
 
-## How FDR is computed
+### How FDR is computed
 
-FDR is computed with the **Benjamini–Hochberg procedure**:
+FDR is computed with the **Benjamini–Hochberg (BH) procedure**:
 
-1. Sort p-values: \(p_{(1)} \le p_{(2)} \le \cdots \le p_{(n)}\).
-2. For each \(k\), compute \(q_k = \min(1, \; p_{(k)} \cdot n / k)\).
-3. Assign the adjusted value \(q_k\) back to the original index of \(p_{(k)}\); optionally enforce monotonicity (this implementation uses the standard BH step-up).
+1. **Sort p-values**  
+   `p_(1) ≤ p_(2) ≤ … ≤ p_(n)`
 
-The horizontal threshold line is set so that it matches the p-value cutoff implied by your chosen FDR threshold for this dataset.
+2. **Compute adjusted values**  
+   For each rank `k`, compute:  
+   `q_k = min(1, p_(k) * n / k)`
+
+3. **Assign adjusted values and threshold**  
+   The adjusted value `q_k` is assigned back to the original index of `p_(k)`, with monotonicity enforced using the standard BH step-up procedure.  
+
+The horizontal threshold line is set to match the p-value cutoff implied by the chosen FDR level for this dataset.
 
 ## How to run locally
 
@@ -92,4 +98,5 @@ If the repo is in a **project site** (e.g. `username.github.io/repo-name`), ensu
 ├── data/         # Optional: add CSV here if you switch from synthetic data
 └── README.md     # This file
 ```
+
 
