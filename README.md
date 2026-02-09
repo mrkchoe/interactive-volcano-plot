@@ -75,12 +75,9 @@ Do not open `index.html` as a file (e.g. `file:///...`); the D3 import will fail
 
 ## Deploy to GitHub Pages
 
-1. Push the repo to GitHub.
 2. **Settings → Pages** → Source: **Deploy from a branch**.
 3. Branch: **main** (or your default), folder: **/ (root)**.
-4. Save. The site will be at `https://<username>.github.io/interactive-volcano-plot/`.
-
-If the repo is in a **project site** (e.g. `username.github.io/repo-name`), ensure links and asset paths are relative (they are in this project).
+4. Save. The site will be at `https://mrkchoe.github.io/interactive-volcano-plot/`.
 
 ## Performance
 
@@ -98,5 +95,6 @@ If the repo is in a **project site** (e.g. `username.github.io/repo-name`), ensu
 ├── data/         # Optional: add CSV here if you switch from synthetic data
 └── README.md     # This file
 ```
+
 
 
