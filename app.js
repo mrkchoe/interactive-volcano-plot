@@ -140,8 +140,9 @@ let state = {
   fcThreshold: DEFAULT_FC_THRESHOLD,
   fdrThreshold: DEFAULT_FDR_THRESHOLD,
   topN: DEFAULT_TOP_N,
-  showLabels: true,
+  showLabels: false,
   pinned: new Set(),
+  pinnedTooltipData: null,
   selected: new Set(),
   searchHighlightId: null,
   pvalAtFdr: null,
@@ -181,7 +182,9 @@ function initContainer() {
   overlay.on("click", (e) => {
     if (e.defaultPrevented) return;
     state.pinned.clear();
+    state.pinnedTooltipData = null;
     state.selected.clear();
+    hideTooltip();
     updateSelectionUI();
     redraw();
   });
@@ -292,8 +295,16 @@ function redraw() {
     .on("click", (e, d) => {
       e.preventDefault();
       if (state.selected.size > 0) return;
-      if (state.pinned.has(d.id)) state.pinned.delete(d.id);
-      else state.pinned.add(d.id);
+      if (state.pinned.has(d.id)) {
+        state.pinned.delete(d.id);
+        if (state.pinnedTooltipData?.id === d.id) {
+          state.pinnedTooltipData = null;
+          hideTooltip();
+        }
+      } else {
+        state.pinned.add(d.id);
+        showPinnedTooltip(e, d);
+      }
       redraw();
     });
   points
@@ -330,18 +341,24 @@ function redraw() {
     .attr("stroke-width", 3);
 }
 
-function showTooltip(e, d) {
-  const tip = d3.select("#tooltip");
-  const baseHtml =
+function buildTooltipHtml(d) {
+  return (
     `<div class="row"><span class="label">id</span> ${d.id}</div>` +
     `<div class="row"><span class="label">log2FC</span> ${d.log2FC.toFixed(3)}</div>` +
     `<div class="row"><span class="label">pval</span> ${d.pval.toExponential(2)}</div>` +
     `<div class="row"><span class="label">fdr</span> ${d.fdr.toExponential(2)}</div>` +
-    `<div class="row uniprot-row"><span class="label">UniProt</span> <span class="uniprot-text">Loading…</span></div>`;
-  tip.html(baseHtml).classed("visible", true).attr("aria-hidden", "false");
+    `<div class="row uniprot-row"><span class="label">UniProt</span> <span class="uniprot-text">Loading…</span></div>`
+  );
+}
+
+function showTooltip(e, d) {
+  if (state.pinnedTooltipData) return;
+  const tip = d3.select("#tooltip");
+  tip.html(buildTooltipHtml(d)).classed("visible", true).attr("aria-hidden", "false");
   moveTooltip(e);
 
   const geneId = d.geneSymbol != null ? d.geneSymbol : d.id;
+  tip.node().setAttribute("data-current-id", geneId);
   const textEl = tip.select(".uniprot-text");
   fetchUniProtDescription(geneId).then((info) => {
     if (!textEl.node() || !tip.classed("visible")) return;
@@ -356,7 +373,6 @@ function showTooltip(e, d) {
       textEl.text("No description found.");
     }
   });
-  tip.node().setAttribute("data-current-id", geneId);
 }
 
 function moveTooltip(e) {
@@ -366,7 +382,32 @@ function moveTooltip(e) {
 }
 
 function hideTooltip() {
+  if (state.pinnedTooltipData) return;
   d3.select("#tooltip").classed("visible", false).attr("aria-hidden", "true");
+}
+
+function showPinnedTooltip(e, d) {
+  state.pinnedTooltipData = d;
+  const tip = d3.select("#tooltip");
+  tip.html(buildTooltipHtml(d)).classed("visible", true).attr("aria-hidden", "false");
+  if (e) moveTooltip(e);
+
+  const geneId = d.geneSymbol != null ? d.geneSymbol : d.id;
+  tip.node().setAttribute("data-current-id", geneId);
+  const textEl = tip.select(".uniprot-text");
+  fetchUniProtDescription(geneId).then((info) => {
+    if (!textEl.node() || !tip.classed("visible")) return;
+    const currentId = tip.node().getAttribute("data-current-id");
+    if (currentId !== geneId) return;
+    if (info?.proteinName || info?.description) {
+      let html = "";
+      if (info.proteinName) html += `<strong>${info.proteinName}</strong>`;
+      if (info.description) html += (html ? " — " : "") + info.description;
+      textEl.html(html);
+    } else {
+      textEl.text("No description found.");
+    }
+  });
 }
 
 // --- Box selection ---
@@ -546,9 +587,11 @@ function bindControls() {
     regenerateBtn.addEventListener("click", () => {
       state.data = generateData();
       state.pinned.clear();
+      state.pinnedTooltipData = null;
       state.selected.clear();
       state.searchHighlightId = null;
       state.zoomDomain = null;
+      hideTooltip();
       updateSelectionUI();
       redraw();
     });
