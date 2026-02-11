@@ -88,6 +88,8 @@ Do not open `index.html` as a file (e.g. `file:///...`); the D3 import will fail
 - **Tradeoff:** For much larger datasets (e.g. 10k+ points), consider switching to **canvas** (e.g. draw circles in a canvas layer) or downsampling for the main view. This version is tuned for portfolio-sized data and avoids a build step; see the code for the single group of circles and minimal DOM.
 - **Transitions:** Threshold and point updates use short D3 transitions (≈200–250 ms) for recolor and movement.
 
+![volcano_demo](https://github.com/user-attachments/assets/9864de7d-9da4-43f3-90a7-776c02a8c80e)
+
 ## File structure
 
 ```
@@ -98,6 +100,7 @@ Do not open `index.html` as a file (e.g. `file:///...`); the D3 import will fail
 ├── data/         # Optional: add CSV here if you switch from synthetic data
 └── README.md     # This file
 ```
+
 
 
 
