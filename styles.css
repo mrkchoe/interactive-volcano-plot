@@ -53,11 +53,30 @@ a { color: var(--accent); }
 /* ---- Panel ---- */
 .panel {
   width: 280px;
-  min-width: 260px;
+  min-width: 200px;
+  max-width: 480px;
   padding: 1rem 1.25rem;
   background: var(--panel-bg);
   border-right: 1px solid var(--border);
   overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* ---- Resize handle (drag to scale plot) ---- */
+.resize-handle {
+  width: 6px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--border);
+  transition: background 0.15s;
+}
+.resize-handle:hover,
+.resize-handle:focus {
+  background: var(--accent);
+}
+.resize-handle:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 .control-group {
   margin-bottom: 1rem;

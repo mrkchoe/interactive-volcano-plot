@@ -474,6 +474,47 @@ function bindControls() {
   if (exportBtn) exportBtn.addEventListener("click", exportSelectedCsv);
 }
 
+// --- Resizable plot (drag handle to scale plot area) ---
+const PANEL_MIN = 200;
+const PANEL_MAX = 480;
+
+function setupResizeHandle() {
+  const handle = document.getElementById("resize-handle");
+  const panel = document.querySelector(".panel");
+  if (!handle || !panel) return;
+
+  let startX = 0;
+  let startWidth = 0;
+
+  function move(e) {
+    const dx = e.clientX - startX;
+    let w = startWidth + dx;
+    w = Math.max(PANEL_MIN, Math.min(PANEL_MAX, w));
+    panel.style.width = `${w}px`;
+    handle.setAttribute("aria-valuenow", String(Math.round(w)));
+  }
+
+  function stop() {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", stop);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  }
+
+  handle.addEventListener("mousedown", (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    startX = e.clientX;
+    startWidth = panel.getBoundingClientRect().width;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", stop);
+  });
+
+  handle.setAttribute("tabindex", "0");
+}
+
 // --- Init ---
 function init() {
   state.data = generateData();
@@ -485,6 +526,7 @@ function init() {
     redraw();
   }
   bindControls();
+  setupResizeHandle();
 }
 
 if (document.readyState === "loading") {
