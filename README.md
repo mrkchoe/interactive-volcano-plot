@@ -13,7 +13,8 @@ Points in the upper left are significant and “down”-regulated; points in the
 
 ## Features
 
-- **Synthetic data:** 1,200 points (id, log2FC, pval, FDR, −log10(p)) generated in JS; FDR computed via Benjamini–Hochberg.
+- **Synthetic data:** 1,200 points (id, log2FC, pval, FDR, −log10(p)) generated in JS using **real gene symbols** (e.g. TP53, BRCA1, EGFR); FDR computed via Benjamini–Hochberg.
+- **UniProt integration:** On hover, the tooltip fetches a brief **protein name and function** from [UniProt](https://www.uniprot.org/) (REST API). Results are cached by gene symbol.
 - **Thresholds:**
   - **log₂ FC threshold** (slider 0–3): vertical lines at ±threshold.
   - **FDR threshold** (slider 0–0.2): horizontal line at the −log10(p) value that corresponds to that FDR level.
@@ -22,15 +23,16 @@ Points in the upper left are significant and “down”-regulated; points in the
   - **Significant down:** log2FC ≤ −FC threshold and FDR ≤ FDR threshold (red).
   - **Not significant:** otherwise (gray).
 - **Interactivity:**
-  - **Tooltip** on hover: id, log2FC, pval, FDR.
-  - **Click** a point to pin its label; click again to unpin. Click on empty plot to clear pins and selection.
+  - **Tooltip** on hover: id, log2FC, pval, FDR, and UniProt description (when available).
+  - **Click** a point to **pin the tooltip** (it stays open) and pin the label; click again to unpin. Click on empty plot to clear pins and close the tooltip.
   - **Box selection:** drag on the plot to select points; selection count and **Export selected CSV** button appear.
 - **Controls (left panel):**
   - FC threshold slider, FDR threshold slider.
-  - Top N significant labels (number input + “Show labels” toggle).
-  - Search box: type an id and click **Go** to highlight and zoom to that point.
+  - Top N significant labels (number input + “Show labels” toggle; default off).
+  - Search box: type an id and click **Go** to highlight and zoom to that point; **Reset zoom** to return to full view.
   - **Graph size** slider (50–100%): scale the plot so the full graph fits your window.
   - **Regenerate data** to create a new synthetic dataset (new random seed).
+- **Layout:** Full viewport fit (no page scroll). **Resize handle** between the panel and plot: drag to give the plot more or less width.
 - **Responsive** layout and **smooth transitions** when changing thresholds.
 - **Accessibility:** keyboard focus for controls, ARIA labels on sliders and search.
 
@@ -71,13 +73,14 @@ Other options:
 - **Node:** `npx serve .` then open the URL shown.
 - **PHP:** `php -S localhost:8080`
 
-Do not open `index.html` as a file (e.g. `file:///...`); the D3 import will fail.
+Do not open `index.html` as a file (e.g. `file:///...`); the D3 import will fail. Serving over HTTP is also required for the UniProt tooltip (CORS).
 
 ## Deploy to GitHub Pages
 
+1. Push the repo to GitHub.
 2. **Settings → Pages** → Source: **Deploy from a branch**.
 3. Branch: **main** (or your default), folder: **/ (root)**.
-4. Save. The site will be at `https://mrkchoe.github.io/interactive-volcano-plot/`.
+4. Save. The site will be at `https://<username>.github.io/interactive-volcano-plot/`.
 
 ## Performance
 
