@@ -87,6 +87,11 @@ a { color: var(--accent); }
   margin-bottom: 1rem;
 }
 .control-group label { display: block; margin-bottom: 0.25rem; font-size: 0.875rem; }
+.control-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
 .label-text { margin-right: 0.5rem; }
 .value { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); }
 input[type="range"] {
@@ -192,9 +197,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   position: relative;
   display: flex;
   flex-direction: column;
+  --graph-size: 1;
 }
 #plot-container {
-  flex: 1;
+  flex: 0 0 calc(100% * var(--graph-size, 1));
   width: 100%;
   min-height: 200px;
   position: relative;

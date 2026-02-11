@@ -29,7 +29,7 @@ Points in the upper left are significant and “down”-regulated; points in the
   - FC threshold slider, FDR threshold slider.
   - Top N significant labels (number input + “Show labels” toggle).
   - Search box: type an id and click **Go** to highlight and zoom to that point.
-  - Optional Y-axis log scale toggle (default remains −log10(p)).
+  - **Graph size** slider (50–100%): scale the plot so the full graph fits your window.
   - **Regenerate data** to create a new synthetic dataset (new random seed).
 - **Responsive** layout and **smooth transitions** when changing thresholds.
 - **Accessibility:** keyboard focus for controls, ARIA labels on sliders and search.

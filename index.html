@@ -60,6 +60,17 @@
       </div>
 
       <div class="control-group">
+        <label for="graph-size">
+          <span class="label-text">Graph size</span>
+          <span id="graph-size-value" class="value">100%</span>
+        </label>
+        <input type="range" id="graph-size" min="50" max="100" step="5" value="100"
+               aria-valuemin="50" aria-valuemax="100" aria-valuenow="100" aria-valuetext="100%"
+               aria-label="Scale the plot so the full graph fits your window">
+        <p class="control-hint">Shrink the plot so it fits in your window.</p>
+      </div>
+
+      <div class="control-group">
         <button type="button" id="regenerate" aria-label="Regenerate synthetic data with new random seed">Regenerate data</button>
       </div>
 

@@ -452,6 +452,23 @@ function bindControls() {
       redraw();
     });
 
+  const graphSizeInput = document.getElementById("graph-size");
+  const graphSizeValue = document.getElementById("graph-size-value");
+  const plotWrapper = document.querySelector(".plot-wrapper");
+  if (graphSizeInput && plotWrapper) {
+    function updateGraphSize() {
+      const pct = parseInt(graphSizeInput.value, 10);
+      const fraction = pct / 100;
+      plotWrapper.style.setProperty("--graph-size", String(fraction));
+      if (graphSizeValue) graphSizeValue.textContent = pct + "%";
+      graphSizeInput.setAttribute("aria-valuenow", pct);
+      graphSizeInput.setAttribute("aria-valuetext", pct + "%");
+      if (typeof redraw === "function") redraw();
+    }
+    graphSizeInput.addEventListener("input", updateGraphSize);
+    updateGraphSize();
+  }
+
   if (regenerateBtn)
     regenerateBtn.addEventListener("click", () => {
       state.data = generateData();
