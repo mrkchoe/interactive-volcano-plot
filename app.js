@@ -38,16 +38,33 @@ function createRng(seed) {
   };
 }
 
-// --- Synthetic data ---
+// --- Synthetic data (use real gene symbols so UniProt hover works) ---
+const GENE_SYMBOLS = [
+  "TP53", "BRCA1", "EGFR", "MYC", "AKT1", "PTEN", "KRAS", "ERBB2", "VEGFA", "IL6",
+  "TNF", "MAPK1", "JUN", "FOS", "STAT3", "NFKB1", "CDKN1A", "BCL2", "CASP3", "ESR1",
+  "AR", "INS", "INSR", "IGF1", "CTNNB1", "APC", "SMAD4", "TGFB1", "CDK1", "CCND1",
+  "RB1", "E2F1", "MDM2", "CDKN2A", "GAPDH", "ACTB", "HSP90AA1", "HSPA8", "TUBB", "LMNA",
+  "SOD1", "CAT", "GPX1", "NFE2L2", "HIF1A", "VHL", "MTOR", "PIK3CA", "GSK3B", "NOTCH1",
+  "WNT1", "DVL1", "AXIN1", "LEF1", "TCF7L2", "MYCN", "FLT1", "KDR", "PDGFRA", "MET",
+  "RET", "BRAF", "RAF1", "MAP2K1", "MAPK3", "ELK1", "CREB1", "ATF2", "JAK2", "SOCS1",
+  "IL10", "IFNG", "CD4", "CD8A", "CD19", "CD34", "KIT", "FLT3", "NPM1", "CEBPA",
+  "RUNX1", "GATA1", "TPO", "EPO", "VEGFB", "FGF2", "PDGFA", "EGF", "TGFB2", "BMP4",
+  "WNT3A", "SHH", "DLL1", "JAG1", "HES1", "HEY1", "SNAI1", "TWIST1", "ZEB1", "CDH1",
+  "VIM", "FN1", "COL1A1", "MMP2", "MMP9", "TIMP1", "SERPINE1", "PLAU", "CXCL12", "CCL2",
+  "IL1B", "IL8", "COX2", "PTGS2", "NOS2", "ARG1", "IDO1", "CD274", "PDCD1", "CTLA4",
+  "CD80", "CD86", "IL2", "IL12A", "TGFB3", "BMP2", "WNT5A", "FZD1", "LRP5", "DKK1",
+];
+
 function generateData(seed = Date.now()) {
   const rng = createRng(seed);
   const data = [];
   for (let i = 0; i < N_POINTS; i++) {
-    const id = `Gene_${String(i + 1).padStart(3, "0")}`;
+    const geneSymbol = GENE_SYMBOLS[i % GENE_SYMBOLS.length];
+    const id = `${geneSymbol}_${i + 1}`;
     const log2FC = (rng() - 0.5) * 6;
     const z = Math.abs(log2FC) + rng() * 2;
     const pval = Math.max(1e-20, 2 * (1 - normalCdf(Math.abs(z))));
-    data.push({ id, log2FC, pval });
+    data.push({ id, geneSymbol, log2FC, pval });
   }
   const pvals = data.map((d) => d.pval);
   const fdr = benjaminiHochberg(pvals);
@@ -75,6 +92,47 @@ function getCategory(d, fcThreshold, fdrThreshold) {
 }
 
 const COLOR = { sig_up: "#3fb950", sig_down: "#f85149", not_sig: "#484f58" };
+
+// --- UniProt (https://www.uniprot.org/) ---
+const UNIPROT_CACHE = new Map();
+const UNIPROT_DESC_MAX = 220;
+
+function fetchUniProtDescription(geneId) {
+  const key = String(geneId).trim();
+  if (!key) return Promise.resolve(null);
+  if (UNIPROT_CACHE.has(key)) return Promise.resolve(UNIPROT_CACHE.get(key));
+
+  const url =
+    "https://rest.uniprot.org/uniprotkb/search?" +
+    "query=" + encodeURIComponent("(gene:" + key + ")") +
+    "&format=json&size=1" +
+    "&fields=protein_name,gene_names,organism_name,cc_function";
+
+  return fetch(url)
+    .then((res) => (res.ok ? res.json() : null))
+    .then((data) => {
+      let proteinName = "";
+      let description = "";
+      const entry = data?.results?.[0];
+      if (entry?.proteinDescription?.recommendedName?.fullName?.value) {
+        proteinName = entry.proteinDescription.recommendedName.fullName.value;
+      }
+      const funcComment = entry?.comments?.find((c) => c.commentType === "FUNCTION");
+      if (funcComment?.texts?.[0]?.value) {
+        description = funcComment.texts[0].value;
+        if (description.length > UNIPROT_DESC_MAX) {
+          description = description.slice(0, UNIPROT_DESC_MAX).trim() + "…";
+        }
+      }
+      const result = proteinName || description ? { proteinName, description } : null;
+      UNIPROT_CACHE.set(key, result);
+      return result;
+    })
+    .catch(() => {
+      UNIPROT_CACHE.set(key, null);
+      return null;
+    });
+}
 
 // --- State ---
 let state = {
@@ -274,16 +332,31 @@ function redraw() {
 
 function showTooltip(e, d) {
   const tip = d3.select("#tooltip");
-  tip
-    .html(
-      `<div class="row"><span class="label">id</span> ${d.id}</div>` +
-        `<div class="row"><span class="label">log2FC</span> ${d.log2FC.toFixed(3)}</div>` +
-        `<div class="row"><span class="label">pval</span> ${d.pval.toExponential(2)}</div>` +
-        `<div class="row"><span class="label">fdr</span> ${d.fdr.toExponential(2)}</div>`
-    )
-    .classed("visible", true)
-    .attr("aria-hidden", "false");
+  const baseHtml =
+    `<div class="row"><span class="label">id</span> ${d.id}</div>` +
+    `<div class="row"><span class="label">log2FC</span> ${d.log2FC.toFixed(3)}</div>` +
+    `<div class="row"><span class="label">pval</span> ${d.pval.toExponential(2)}</div>` +
+    `<div class="row"><span class="label">fdr</span> ${d.fdr.toExponential(2)}</div>` +
+    `<div class="row uniprot-row"><span class="label">UniProt</span> <span class="uniprot-text">Loading…</span></div>`;
+  tip.html(baseHtml).classed("visible", true).attr("aria-hidden", "false");
   moveTooltip(e);
+
+  const geneId = d.geneSymbol != null ? d.geneSymbol : d.id;
+  const textEl = tip.select(".uniprot-text");
+  fetchUniProtDescription(geneId).then((info) => {
+    if (!textEl.node() || !tip.classed("visible")) return;
+    const currentId = tip.node().getAttribute("data-current-id");
+    if (currentId !== geneId) return;
+    if (info?.proteinName || info?.description) {
+      let html = "";
+      if (info.proteinName) html += `<strong>${info.proteinName}</strong>`;
+      if (info.description) html += (html ? " — " : "") + info.description;
+      textEl.html(html);
+    } else {
+      textEl.text("No description found.");
+    }
+  });
+  tip.node().setAttribute("data-current-id", geneId);
 }
 
 function moveTooltip(e) {

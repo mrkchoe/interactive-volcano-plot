@@ -230,6 +230,8 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 .tooltip.visible { opacity: 1; }
 .tooltip .row { margin: 0.15rem 0; }
+.tooltip .uniprot-row { margin-top: 0.35rem; padding-top: 0.35rem; border-top: 1px solid var(--border); }
+.tooltip .uniprot-text { font-style: normal; }
 .tooltip .label { color: var(--text-muted); margin-right: 0.5rem; }
 
 /* ---- Selection box (drawn by D3) ---- */
