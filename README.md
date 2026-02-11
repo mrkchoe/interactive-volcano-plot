@@ -27,16 +27,12 @@ Points in the upper left are significant and “down”-regulated; points in the
 - **Interactivity:**
   - **Tooltip** on hover: id, log2FC, pval, FDR, and UniProt description (when available).
   - **Click** a point to **pin the tooltip** (it stays open) and pin the label; click again to unpin. Click on empty plot to clear pins and close the tooltip.
-  - **Box selection:** drag on the plot to select points; selection count and **Export selected CSV** button appear.
 - **Controls (left panel):**
   - FC threshold slider, FDR threshold slider.
   - Top N significant labels (number input + “Show labels” toggle; default off).
   - Search box: type an id and click **Go** to highlight and zoom to that point; **Reset zoom** to return to full view.
   - **Graph size** slider (50–100%): scale the plot so the full graph fits your window.
   - **Regenerate data** to create a new synthetic dataset (new random seed).
-- **Layout:** Full viewport fit (no page scroll). **Resize handle** between the panel and plot: drag to give the plot more or less width.
-- **Responsive** layout and **smooth transitions** when changing thresholds.
-- **Accessibility:** keyboard focus for controls, ARIA labels on sliders and search.
 
 ## How thresholds work
 
@@ -100,6 +96,7 @@ Do not open `index.html` as a file (e.g. `file:///...`); the D3 import will fail
 ├── data/         # Optional: add CSV here if you switch from synthetic data
 └── README.md     # This file
 ```
+
 
 
 
