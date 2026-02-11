@@ -83,7 +83,6 @@ let state = {
   fdrThreshold: DEFAULT_FDR_THRESHOLD,
   topN: DEFAULT_TOP_N,
   showLabels: true,
-  yLogScale: false,
   pinned: new Set(),
   selected: new Set(),
   searchHighlightId: null,
@@ -388,7 +387,6 @@ function bindControls() {
   const showLabelsCb = document.getElementById("show-labels");
   const searchId = document.getElementById("search-id");
   const searchBtn = document.getElementById("search-btn");
-  const yLogCb = document.getElementById("y-log-scale");
   const regenerateBtn = document.getElementById("regenerate");
   const exportBtn = document.getElementById("export-csv");
 
@@ -451,12 +449,6 @@ function bindControls() {
     resetZoomBtn.addEventListener("click", () => {
       state.zoomDomain = null;
       state.searchHighlightId = null;
-      redraw();
-    });
-
-  if (yLogCb)
-    yLogCb.addEventListener("change", () => {
-      state.yLogScale = yLogCb.checked;
       redraw();
     });
 

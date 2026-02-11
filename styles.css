@@ -17,14 +17,17 @@
 
 /* ---- Reset & base ---- */
 *, *::before, *::after { box-sizing: border-box; }
-html { font-size: 16px; scroll-behavior: smooth; }
+html { font-size: 16px; scroll-behavior: smooth; height: 100%; }
 body {
   margin: 0;
   font-family: var(--font-sans);
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ---- Typography ---- */
@@ -41,13 +44,15 @@ a { color: var(--accent); }
 
 /* ---- Layout ---- */
 .header {
+  flex-shrink: 0;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border);
 }
 .main {
   display: flex;
   flex: 1;
-  min-height: calc(100vh - 80px);
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ---- Panel ---- */
@@ -191,7 +196,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 #plot-container {
   flex: 1;
   width: 100%;
-  min-height: 400px;
+  min-height: 200px;
   position: relative;
 }
 #plot-container svg {
